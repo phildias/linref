@@ -76,6 +76,7 @@ def extract_m_values_from_gdb_layer(gdb_path, layer_name):
     layer = data_source.GetLayerByName(layer_name)
     layer_definition = layer.GetLayerDefn()
     fid_colname = layer.GetFIDColumn()
+    epsg_code = pyproj.CRS(layer.GetSpatialRef().ExportToWkt()).to_epsg()
     
     # Making sure the feature reader is reset
     layer.ResetReading()
@@ -120,8 +121,6 @@ def extract_m_values_from_gdb_layer(gdb_path, layer_name):
     final_layer_df = pd.concat(layer_rows, ignore_index=True)
     final_geoms = final_layer_df['geom_wkb'].apply(lambda x: shapely.wkb.loads(x))
     
-    epsg_code = pyproj.CRS(layer.GetSpatialRef().ExportToWkt()).to_epsg()
-
     final_layer_gdf = gpd.GeoDataFrame(data=final_layer_df.copy(), 
                                        geometry=final_geoms,
                                        crs=f'epsg:{epsg_code}')
@@ -139,5 +138,7 @@ layer_name = 'TxDOT_Roadway_Linework'
 full_gdf = extract_m_values_from_gdb_layer(gdb_path, layer_name)
 
 out_gpkg = ('c:/temp/m_values.gpkg')
+#full_gdf.to_file(out_gpkg, layer='m_values', driver='GPKG')
+full_gdf.to_pickle('c:/temp/m_values.pkl')
 
-full_gdf.to_file(out_gpkg, layer='m_values', driver='GPKG')
+#full_gdf = pd.read_pickle("C:\Temp\m_values.pkl")
