@@ -138,7 +138,8 @@ layer_name = 'TxDOT_Roadway_Linework'
 full_gdf = extract_m_values_from_gdb_layer(gdb_path, layer_name)
 
 out_gpkg = ('c:/temp/m_values.gpkg')
-#full_gdf.to_file(out_gpkg, layer='m_values', driver='GPKG')
+
+full_gdf.drop(columns=['geom_wkb']).to_file(out_gpkg, layer='m_values', driver='GPKG')
 full_gdf.to_pickle('c:/temp/m_values.pkl')
 
 #full_gdf = pd.read_pickle("C:\Temp\m_values.pkl")

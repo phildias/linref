@@ -69,14 +69,14 @@ class MLSRoute(object):
             if isinstance(mls, LineString):
                 mls = MultiLineString([mls])
             else:
-                raise TypeError("Input geometry must be a shapely \
-MultiLineString or LineString.")
+                raise TypeError("Input geometry must be a shapely "
+                                "MultiLineString or LineString.")
         self._mls = mls
         
         # Confirm valid closed selection
         if not closed in ('left', 'right', 'both', 'neither'):
-            raise ValueError("Closed selection must be 'left', 'right', \
-'both', or 'neither'.")
+            raise ValueError("Closed selection must be 'left', 'right', 'both'"
+                             ", or 'neither'.")
         else:
             self._closed = closed
             
@@ -87,13 +87,15 @@ MultiLineString or LineString.")
             try:
                 rte_ranges = np.asarray(rte_ranges)
             except:
-                raise TypeError("Input ranges should be array-like of \
-numeric values with a shape of (n,2) where n equals the number of lines in \
-the provided MultiLineString.")
+                raise TypeError("Input ranges should be array-like of numeric "
+                                "values with a shape of (n,2) where n equals "
+                                "the number of lines in the provided "
+                                "MultiLineString.")
             if not rte_ranges.shape == (len(mls), 2):
-                raise ValueError("Input ranges should be array-like of \
-numeric values with a shape of (n,2) where n equals the number of lines in \
-the provided MultiLineString.")
+                raise ValueError("Input ranges should be array-like of numeric"
+                                 " values with a shape of (n,2) where n equals"
+                                 " the number of lines in the provided "
+                                 "MultiLineString.")
             # Convert to breaks
             self._rte_breaks = self._ranges_to_breaks(rte_ranges)
             _input_route_values = True
@@ -104,14 +106,16 @@ the provided MultiLineString.")
             try:
                 rte_breaks = [np.asarray(x) for x in rte_breaks]
             except:
-                raise TypeError("Input breaks should be list of array-like \
-of numeric values with lengths equal to the number of vertices in each \
-corresponding line in the provided MultiLineString.")
+                raise TypeError("Input breaks should be list of array-like of "
+                                "numeric values with lengths equal to the "
+                                "number of vertices in each corresponding line"
+                                " in the provided MultiLineString.")
             if not [len(x) for x in rte_breaks] == \
                 [len(l.coords) for l in mls]:
-                raise TypeError("Input breaks should be list of array-like \
-of numeric values with lengths equal to the number of vertices in each \
-corresponding line in the provided MultiLineString.")
+                raise TypeError("Input breaks should be list of array-like of "
+                                "numeric values with lengths equal to the "
+                                "number of vertices in each corresponding line"
+                                " in the provided MultiLineString.")
             # Log values
             self._rte_breaks = rte_breaks
             _input_route_values = True
@@ -304,10 +308,11 @@ corresponding line in the provided MultiLineString.")
             full_lines = combine_mpgs(full_lines, cls=MultiLineString)
         # - Invalid input type
         else:
-            raise ValueError(f'Must provide a number of begin and \
-end mile post values equal to the number of lines if providing multiple \
-values. Provided: {len(begs):,.0f} begs, {len(ends):,.0f} ends, \
-{len(mls):,.0f} lines.')
+            raise ValueError(f'Must provide a number of begin and end mile '
+                             f'post values equal to the number of lines if '
+                             f'providing multiple values. Provided: '
+                             f'{len(begs):,.0f} begs, {len(ends):,.0f} ends, '
+                             f'{len(mls):,.0f} lines.')
         
         # Return generated MLSRoute instance based on input parameters
         return cls(full_lines, rte_ranges=ranges, **kwargs)
@@ -328,8 +333,8 @@ values. Provided: {len(begs):,.0f} begs, {len(ends):,.0f} ends, \
             for route in routes:
                 assert isinstance(route, cls)
         except:
-            raise TypeError("Input routes must be list-like of MLSRoute \
-class instances.")
+            raise TypeError("Input routes must be list-like of MLSRoute class "
+                            "instances.")
         
         # Combine route breaks
         rte_breaks = \
@@ -363,8 +368,9 @@ class instances.")
             try:
                 delta = rng[-1] - rng[0]
             except IndexError:
-                raise IndexError("Input route ranges information must be \
-provided as a list of tuples of start and end values.")
+                raise IndexError("Input route ranges information must be "
+                                 "provided as a list of tuples of start and "
+                                 "end values.")
             lengths = lengths / lengths.sum() # Normalize
             lengths = (lengths.cumsum() * delta) + rng[0]
             lengths[-1] = rng[-1] # Snap last value to range bound
@@ -396,8 +402,9 @@ provided as a list of tuples of start and end values.")
         rc = RangeCollection.from_breaks(
             breaks=self.rte_breaks, closed=self._closed, sort=False)
         if not rc.num_ranges == self.mls_ranges.num_ranges:
-            raise ValueError("Input reference breaks must define a number of \
-ranges equal to the number of line segments in the input multilinestring.")
+            raise ValueError("Input reference breaks must define a number of "
+                             "ranges equal to the number of line segments in "
+                             "the input multilinestring.")
         return rc
     
     def copy(self, deep=False):
@@ -434,16 +441,18 @@ ranges equal to the number of line segments in the input multilinestring.")
         # Validate input
         if loc < 0:
             if bounded:
-                raise ValueError("Location value cannot be negative when \
-the bounded parameter is True. Change to False to snap negative values to \
-zero.")
+                raise ValueError("Location value cannot be negative when the "
+                                 "bounded parameter is True. Change to False "
+                                 "to snap negative values to zero.")
             else:
                 loc = 0
         elif loc > self.mls_length:
             if bounded:
-                raise ValueError("Location value cannot be greater than the \
-total length of the MLS when the bounded parameter is True. Change to False \
-to snap negative values to the total length of the MLS.")
+                raise ValueError("Location value cannot be greater than the "
+                                 "total length of the MLS when the bounded "
+                                 "parameter is True. Change to False to snap "
+                                 "negative values to the total length of the "
+                                 "MLS.")
             else:
                 loc = self.mls_length
         
@@ -880,8 +889,8 @@ to snap negative values to the total length of the MLS.")
         try:
             cuts = np.sort(np.asarray(cuts))
         except:
-            raise ValueError("Must provide segment cuts as array-like of \
-numeric cutting point values.")
+            raise ValueError("Must provide segment cuts as array-like of "
+                             "numeric cutting point values.")
         
         # Compute the valid ranges of the routes
         beg =  self.mls_ranges.begs.min() if by_mls \
@@ -986,7 +995,7 @@ def combine_mpgs(objs, cls=None):
         elif isinstance(obj, shapely.geometry.base.BaseGeometry):
             new.extend([obj])
         else:
-            raise TypeError(f"Invalid geometry type")
+            raise TypeError("Invalid geometry type")
     # Convert list to geometry collection or provided class
     if cls is None:
         new = shapely.geometry.collection.GeometryCollection(new)
@@ -1014,7 +1023,7 @@ if __name__ == '__main__':
     mls = MultiLineString([[(0,0), (0,5), (5,5), (5,0)],
                            [(5,0), (5,-5), (10,-5), (10,0)],
                            [(10,0), (10,5), (15,5), (15,0)],
-                           [(20,0), (20,-5), (25,-5), (25,0)]])                
+                           [(20,0), (20,-5), (25,-5), (25,0)]])
                 
     # Create a generic range set
     rte_ranges = [(0,150), (200,350), (400,550), (600,650)]
